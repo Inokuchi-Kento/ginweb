@@ -22,7 +22,9 @@ type userRepository struct {
 }
 
 func NewUserRepository(db *ent.Client) (repo UserRepository) {
-	return &userRepository{DB: db}
+	return &userRepository{
+		DB: db,
+	}
 }
 
 func (ur *userRepository) GetUsers(ctx context.Context) (users []domain.User, err error) {
