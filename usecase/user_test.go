@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"ginweb/domain"
+	"log"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -18,23 +19,48 @@ func (m *MockUserRepository) CreateUser(ctx context.Context, u *domain.User) (do
 	return args.Get(0).(domain.User), args.Error(1)
 }
 
-func (m *MockUserRepository) DeleteUserByID(ctx context.Context, userID int) error {
-	args := m.Called(ctx, userID)
+func (m *MockUserRepository) GetUsers(ctx context.Context) ([]domain.User, error) {
+	args := m.Called(ctx)
+	return args.Get(0).([]domain.User), args.Error(1)
+}
+
+func (m *MockUserRepository) GetUserByID(ctx context.Context, id int) (domain.User, error) {
+	args := m.Called(ctx, id)
+	return args.Get(0).(domain.User), args.Error(1)
+}
+
+func (m *MockUserRepository) UpdateUser(ctx context.Context, u *domain.User, id int) (domain.User, error) {
+	args := m.Called(ctx, u, id)
+	return args.Get(0).(domain.User), args.Error(1)
+}
+
+func (m *MockUserRepository) DeleteUserByID(ctx context.Context, id int) error {
+	args := m.Called(ctx, id)
 	return args.Error(0)
 }
 
-func TestCreateUser(t *testing.T) {
+func TestUserUseCase_CreateUser(t *testing.T) {
+	mockRepo := new(MockUserRepository)
+	userUsesase := NewUserUseCase(mockRepo)
+
 	ctx := context.Background()
-	u := domain.User{
+	inputUser := domain.User{
 		Name: "test",
 		Age:  20,
 	}
-	mockRepo := new(MockUserRepository)
-	mockRepo.On("CreateUser", ctx, &u).Return(u, nil)
 
-	uc := NewUserUseCase(mockRepo)
+	createdUser := domain.User{
+		Name: "test",
+		Age:  20,
+	}
 
-	user, err := uc.CreateUser(ctx, &u)
+	mockRepo.On("CreateUser", ctx, &inputUser).Return(createdUser, nil)
+
+	resultUser, err := userUsesase.CreateUser(ctx, &inputUser)
+	log.Println(resultUser)
+
+	mockRepo.AssertCalled(t, "CreateUser", ctx, &inputUser)
+
 	assert.NoError(t, err)
-	assert.Equal(t, u, user)
+	assert.Equal(t, createdUser, resultUser)
 }
