@@ -13,6 +13,7 @@ type UserUseCase interface {
 	GetUserByID(ctx context.Context, id int) (domain.User, error)
 	UpdateUser(ctx context.Context, u *domain.User, id int) (domain.User, error)
 	DeleteUserByID(ctx context.Context, id int) error
+	UpsertUser(ctx context.Context, u *domain.User) (int, error)
 }
 
 type userUseCase struct {
@@ -61,4 +62,13 @@ func (usecase *userUseCase) DeleteUserByID(ctx context.Context, id int) error {
 		err = fmt.Errorf("[usecase.DeleteUserByID] failed: %w ", err)
 	}
 	return err
+}
+
+// uppsert
+func (usecase *userUseCase) UpsertUser(ctx context.Context, u *domain.User) (int, error) {
+	affected, err := usecase.UserRepository.UpsertUser(ctx, u)
+	if err != nil {
+		err = fmt.Errorf("[usecase.UpsertUser] failed: %w ", err)
+	}
+	return affected, err
 }

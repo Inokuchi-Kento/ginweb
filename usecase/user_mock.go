@@ -35,3 +35,8 @@ func (m *MockUserRepository) DeleteUserByID(ctx context.Context, id int) error {
 	args := m.Called(ctx, id)
 	return args.Error(0)
 }
+
+func (m *MockUserRepository) UpsertUser(ctx context.Context, u *domain.User) (int, error) {
+	args := m.Called(ctx, u)
+	return args.Int(0), args.Error(1)
+}

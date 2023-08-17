@@ -86,3 +86,18 @@ func (controller *userController) DeleteUser(ctx *gin.Context) {
 	}
 	responseNoContent(ctx)
 }
+
+// upsert
+func (controller *userController) UpsertUser(ctx *gin.Context) {
+	u := &domain.User{}
+	ok := bindJSON(ctx, u)
+	if !ok {
+		return
+	}
+
+	id, err := controller.UseCase.UpsertUser(ctx, u)
+	if checkError(ctx, err) {
+		return
+	}
+	responseOK(ctx, id)
+}
