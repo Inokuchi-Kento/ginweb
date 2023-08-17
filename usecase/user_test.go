@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"ginweb/domain"
+	"ginweb/domain/testdata"
 	"log"
 	"testing"
 
@@ -63,4 +64,23 @@ func TestUserUseCase_CreateUser(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, createdUser, resultUser)
+}
+
+func TestUserUseCase_GetUsers(t *testing.T) {
+	mockRepo := new(MockUserRepository)
+	userUsesase := NewUserUseCase(mockRepo)
+
+	ctx := context.Background()
+
+	getUsers := testdata.Users
+
+	mockRepo.On("GetUsers", ctx).Return(getUsers, nil)
+
+	resultUsers, err := userUsesase.GetUsers(ctx)
+	log.Println(resultUsers)
+
+	mockRepo.AssertCalled(t, "GetUsers", ctx)
+
+	assert.NoError(t, err)
+	assert.Equal(t, getUsers, resultUsers)
 }
