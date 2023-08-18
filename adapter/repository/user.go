@@ -15,7 +15,6 @@ type UserRepository interface {
 	GetUserByID(ctx context.Context, id int) (user domain.User, err error)
 	UpdateUser(ctx context.Context, u *domain.User, id int) (user domain.User, err error)
 	DeleteUserByID(ctx context.Context, id int) error
-	UpsertUser(ctx context.Context, u *domain.User) (int, error)
 }
 
 type userRepository struct {
@@ -103,19 +102,4 @@ func (ur *userRepository) DeleteUserByID(ctx context.Context, id int) error {
 		err = fmt.Errorf("[repository.UserRepository.DeleteUserByID] failed: id = %d, error = %w ", id, err)
 	}
 	return err
-}
-
-// upsert
-func (ur *userRepository) UpsertUser(ctx context.Context, u *domain.User) (int, error) {
-	getID, err := ur.DB.User.Create().
-		SetName(u.Name).
-		SetAge(u.Age).
-		OnConflict().
-		UpdateNewValues().
-		ID(ctx)
-	if err != nil {
-		err = fmt.Errorf("[repository.UserRepository.UpsertUser] failed: user = %+v, error = %w ", getID, err)
-		return 0, err
-	}
-	return getID, nil
 }
