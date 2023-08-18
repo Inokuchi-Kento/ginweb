@@ -291,12 +291,12 @@ func (dq *DepartmentQuery) WithEmployees(opts ...func(*EmployeeQuery)) *Departme
 // Example:
 //
 //	var v []struct {
-//		DepartmentID int `json:"department_id,omitempty"`
+//		Name string `json:"name,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Department.Query().
-//		GroupBy(department.FieldDepartmentID).
+//		GroupBy(department.FieldName).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (dq *DepartmentQuery) GroupBy(field string, fields ...string) *DepartmentGroupBy {
@@ -317,11 +317,11 @@ func (dq *DepartmentQuery) GroupBy(field string, fields ...string) *DepartmentGr
 // Example:
 //
 //	var v []struct {
-//		DepartmentID int `json:"department_id,omitempty"`
+//		Name string `json:"name,omitempty"`
 //	}
 //
 //	client.Department.Query().
-//		Select(department.FieldDepartmentID).
+//		Select(department.FieldName).
 //		Scan(ctx, &v)
 func (dq *DepartmentQuery) Select(fields ...string) *DepartmentSelect {
 	dq.fields = append(dq.fields, fields...)

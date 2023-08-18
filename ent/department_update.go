@@ -27,19 +27,6 @@ func (du *DepartmentUpdate) Where(ps ...predicate.Department) *DepartmentUpdate 
 	return du
 }
 
-// SetDepartmentID sets the "department_id" field.
-func (du *DepartmentUpdate) SetDepartmentID(i int) *DepartmentUpdate {
-	du.mutation.ResetDepartmentID()
-	du.mutation.SetDepartmentID(i)
-	return du
-}
-
-// AddDepartmentID adds i to the "department_id" field.
-func (du *DepartmentUpdate) AddDepartmentID(i int) *DepartmentUpdate {
-	du.mutation.AddDepartmentID(i)
-	return du
-}
-
 // SetName sets the "name" field.
 func (du *DepartmentUpdate) SetName(s string) *DepartmentUpdate {
 	du.mutation.SetName(s)
@@ -159,20 +146,6 @@ func (du *DepartmentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if value, ok := du.mutation.DepartmentID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: department.FieldDepartmentID,
-		})
-	}
-	if value, ok := du.mutation.AddedDepartmentID(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: department.FieldDepartmentID,
-		})
-	}
 	if value, ok := du.mutation.Name(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -251,19 +224,6 @@ type DepartmentUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *DepartmentMutation
-}
-
-// SetDepartmentID sets the "department_id" field.
-func (duo *DepartmentUpdateOne) SetDepartmentID(i int) *DepartmentUpdateOne {
-	duo.mutation.ResetDepartmentID()
-	duo.mutation.SetDepartmentID(i)
-	return duo
-}
-
-// AddDepartmentID adds i to the "department_id" field.
-func (duo *DepartmentUpdateOne) AddDepartmentID(i int) *DepartmentUpdateOne {
-	duo.mutation.AddDepartmentID(i)
-	return duo
 }
 
 // SetName sets the "name" field.
@@ -408,20 +368,6 @@ func (duo *DepartmentUpdateOne) sqlSave(ctx context.Context) (_node *Department,
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := duo.mutation.DepartmentID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: department.FieldDepartmentID,
-		})
-	}
-	if value, ok := duo.mutation.AddedDepartmentID(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: department.FieldDepartmentID,
-		})
 	}
 	if value, ok := duo.mutation.Name(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{

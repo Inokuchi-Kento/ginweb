@@ -15,8 +15,6 @@ type Department struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
-	// DepartmentID holds the value of the "department_id" field.
-	DepartmentID int `json:"department_id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -47,7 +45,7 @@ func (*Department) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case department.FieldID, department.FieldDepartmentID:
+		case department.FieldID:
 			values[i] = new(sql.NullInt64)
 		case department.FieldName:
 			values[i] = new(sql.NullString)
@@ -72,12 +70,6 @@ func (d *Department) assignValues(columns []string, values []interface{}) error 
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			d.ID = int(value.Int64)
-		case department.FieldDepartmentID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field department_id", values[i])
-			} else if value.Valid {
-				d.DepartmentID = int(value.Int64)
-			}
 		case department.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
@@ -117,8 +109,6 @@ func (d *Department) String() string {
 	var builder strings.Builder
 	builder.WriteString("Department(")
 	builder.WriteString(fmt.Sprintf("id=%v", d.ID))
-	builder.WriteString(", department_id=")
-	builder.WriteString(fmt.Sprintf("%v", d.DepartmentID))
 	builder.WriteString(", name=")
 	builder.WriteString(d.Name)
 	builder.WriteByte(')')

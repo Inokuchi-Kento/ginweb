@@ -22,12 +22,6 @@ type DepartmentCreate struct {
 	conflict []sql.ConflictOption
 }
 
-// SetDepartmentID sets the "department_id" field.
-func (dc *DepartmentCreate) SetDepartmentID(i int) *DepartmentCreate {
-	dc.mutation.SetDepartmentID(i)
-	return dc
-}
-
 // SetName sets the "name" field.
 func (dc *DepartmentCreate) SetName(s string) *DepartmentCreate {
 	dc.mutation.SetName(s)
@@ -119,9 +113,6 @@ func (dc *DepartmentCreate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (dc *DepartmentCreate) check() error {
-	if _, ok := dc.mutation.DepartmentID(); !ok {
-		return &ValidationError{Name: "department_id", err: errors.New(`ent: missing required field "department_id"`)}
-	}
 	if _, ok := dc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
 	}
@@ -153,14 +144,6 @@ func (dc *DepartmentCreate) createSpec() (*Department, *sqlgraph.CreateSpec) {
 		}
 	)
 	_spec.OnConflict = dc.conflict
-	if value, ok := dc.mutation.DepartmentID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: department.FieldDepartmentID,
-		})
-		_node.DepartmentID = value
-	}
 	if value, ok := dc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -195,7 +178,7 @@ func (dc *DepartmentCreate) createSpec() (*Department, *sqlgraph.CreateSpec) {
 // of the `INSERT` statement. For example:
 //
 //	client.Department.Create().
-//		SetDepartmentID(v).
+//		SetName(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -204,7 +187,7 @@ func (dc *DepartmentCreate) createSpec() (*Department, *sqlgraph.CreateSpec) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.DepartmentUpsert) {
-//			SetDepartmentID(v+v).
+//			SetName(v+v).
 //		}).
 //		Exec(ctx)
 func (dc *DepartmentCreate) OnConflict(opts ...sql.ConflictOption) *DepartmentUpsertOne {
@@ -239,18 +222,6 @@ type (
 		*sql.UpdateSet
 	}
 )
-
-// SetDepartmentID sets the "department_id" field.
-func (u *DepartmentUpsert) SetDepartmentID(v int) *DepartmentUpsert {
-	u.Set(department.FieldDepartmentID, v)
-	return u
-}
-
-// UpdateDepartmentID sets the "department_id" field to the value that was provided on create.
-func (u *DepartmentUpsert) UpdateDepartmentID() *DepartmentUpsert {
-	u.SetExcluded(department.FieldDepartmentID)
-	return u
-}
 
 // SetName sets the "name" field.
 func (u *DepartmentUpsert) SetName(v string) *DepartmentUpsert {
@@ -300,20 +271,6 @@ func (u *DepartmentUpsertOne) Update(set func(*DepartmentUpsert)) *DepartmentUps
 		set(&DepartmentUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetDepartmentID sets the "department_id" field.
-func (u *DepartmentUpsertOne) SetDepartmentID(v int) *DepartmentUpsertOne {
-	return u.Update(func(s *DepartmentUpsert) {
-		s.SetDepartmentID(v)
-	})
-}
-
-// UpdateDepartmentID sets the "department_id" field to the value that was provided on create.
-func (u *DepartmentUpsertOne) UpdateDepartmentID() *DepartmentUpsertOne {
-	return u.Update(func(s *DepartmentUpsert) {
-		s.UpdateDepartmentID()
-	})
 }
 
 // SetName sets the "name" field.
@@ -460,7 +417,7 @@ func (dcb *DepartmentCreateBulk) ExecX(ctx context.Context) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.DepartmentUpsert) {
-//			SetDepartmentID(v+v).
+//			SetName(v+v).
 //		}).
 //		Exec(ctx)
 func (dcb *DepartmentCreateBulk) OnConflict(opts ...sql.ConflictOption) *DepartmentUpsertBulk {
@@ -525,20 +482,6 @@ func (u *DepartmentUpsertBulk) Update(set func(*DepartmentUpsert)) *DepartmentUp
 		set(&DepartmentUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetDepartmentID sets the "department_id" field.
-func (u *DepartmentUpsertBulk) SetDepartmentID(v int) *DepartmentUpsertBulk {
-	return u.Update(func(s *DepartmentUpsert) {
-		s.SetDepartmentID(v)
-	})
-}
-
-// UpdateDepartmentID sets the "department_id" field to the value that was provided on create.
-func (u *DepartmentUpsertBulk) UpdateDepartmentID() *DepartmentUpsertBulk {
-	return u.Update(func(s *DepartmentUpsert) {
-		s.UpdateDepartmentID()
-	})
 }
 
 // SetName sets the "name" field.

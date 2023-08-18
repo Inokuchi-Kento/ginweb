@@ -35,8 +35,6 @@ type DepartmentMutation struct {
 	op               Op
 	typ              string
 	id               *int
-	department_id    *int
-	adddepartment_id *int
 	name             *string
 	clearedFields    map[string]struct{}
 	employees        map[int]struct{}
@@ -124,62 +122,6 @@ func (m *DepartmentMutation) ID() (id int, exists bool) {
 		return
 	}
 	return *m.id, true
-}
-
-// SetDepartmentID sets the "department_id" field.
-func (m *DepartmentMutation) SetDepartmentID(i int) {
-	m.department_id = &i
-	m.adddepartment_id = nil
-}
-
-// DepartmentID returns the value of the "department_id" field in the mutation.
-func (m *DepartmentMutation) DepartmentID() (r int, exists bool) {
-	v := m.department_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldDepartmentID returns the old "department_id" field's value of the Department entity.
-// If the Department object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DepartmentMutation) OldDepartmentID(ctx context.Context) (v int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldDepartmentID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldDepartmentID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDepartmentID: %w", err)
-	}
-	return oldValue.DepartmentID, nil
-}
-
-// AddDepartmentID adds i to the "department_id" field.
-func (m *DepartmentMutation) AddDepartmentID(i int) {
-	if m.adddepartment_id != nil {
-		*m.adddepartment_id += i
-	} else {
-		m.adddepartment_id = &i
-	}
-}
-
-// AddedDepartmentID returns the value that was added to the "department_id" field in this mutation.
-func (m *DepartmentMutation) AddedDepartmentID() (r int, exists bool) {
-	v := m.adddepartment_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetDepartmentID resets all changes to the "department_id" field.
-func (m *DepartmentMutation) ResetDepartmentID() {
-	m.department_id = nil
-	m.adddepartment_id = nil
 }
 
 // SetName sets the "name" field.
@@ -291,10 +233,7 @@ func (m *DepartmentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DepartmentMutation) Fields() []string {
-	fields := make([]string, 0, 2)
-	if m.department_id != nil {
-		fields = append(fields, department.FieldDepartmentID)
-	}
+	fields := make([]string, 0, 1)
 	if m.name != nil {
 		fields = append(fields, department.FieldName)
 	}
@@ -306,8 +245,6 @@ func (m *DepartmentMutation) Fields() []string {
 // schema.
 func (m *DepartmentMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case department.FieldDepartmentID:
-		return m.DepartmentID()
 	case department.FieldName:
 		return m.Name()
 	}
@@ -319,8 +256,6 @@ func (m *DepartmentMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *DepartmentMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case department.FieldDepartmentID:
-		return m.OldDepartmentID(ctx)
 	case department.FieldName:
 		return m.OldName(ctx)
 	}
@@ -332,13 +267,6 @@ func (m *DepartmentMutation) OldField(ctx context.Context, name string) (ent.Val
 // type.
 func (m *DepartmentMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case department.FieldDepartmentID:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetDepartmentID(v)
-		return nil
 	case department.FieldName:
 		v, ok := value.(string)
 		if !ok {
@@ -353,21 +281,13 @@ func (m *DepartmentMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *DepartmentMutation) AddedFields() []string {
-	var fields []string
-	if m.adddepartment_id != nil {
-		fields = append(fields, department.FieldDepartmentID)
-	}
-	return fields
+	return nil
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *DepartmentMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	case department.FieldDepartmentID:
-		return m.AddedDepartmentID()
-	}
 	return nil, false
 }
 
@@ -376,13 +296,6 @@ func (m *DepartmentMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *DepartmentMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case department.FieldDepartmentID:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddDepartmentID(v)
-		return nil
 	}
 	return fmt.Errorf("unknown Department numeric field %s", name)
 }
@@ -410,9 +323,6 @@ func (m *DepartmentMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *DepartmentMutation) ResetField(name string) error {
 	switch name {
-	case department.FieldDepartmentID:
-		m.ResetDepartmentID()
-		return nil
 	case department.FieldName:
 		m.ResetName()
 		return nil

@@ -92,93 +92,10 @@ func IDLTE(id int) predicate.Department {
 	})
 }
 
-// DepartmentID applies equality check predicate on the "department_id" field. It's identical to DepartmentIDEQ.
-func DepartmentID(v int) predicate.Department {
-	return predicate.Department(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDepartmentID), v))
-	})
-}
-
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.Department {
 	return predicate.Department(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldName), v))
-	})
-}
-
-// DepartmentIDEQ applies the EQ predicate on the "department_id" field.
-func DepartmentIDEQ(v int) predicate.Department {
-	return predicate.Department(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDepartmentID), v))
-	})
-}
-
-// DepartmentIDNEQ applies the NEQ predicate on the "department_id" field.
-func DepartmentIDNEQ(v int) predicate.Department {
-	return predicate.Department(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDepartmentID), v))
-	})
-}
-
-// DepartmentIDIn applies the In predicate on the "department_id" field.
-func DepartmentIDIn(vs ...int) predicate.Department {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Department(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldDepartmentID), v...))
-	})
-}
-
-// DepartmentIDNotIn applies the NotIn predicate on the "department_id" field.
-func DepartmentIDNotIn(vs ...int) predicate.Department {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Department(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldDepartmentID), v...))
-	})
-}
-
-// DepartmentIDGT applies the GT predicate on the "department_id" field.
-func DepartmentIDGT(v int) predicate.Department {
-	return predicate.Department(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDepartmentID), v))
-	})
-}
-
-// DepartmentIDGTE applies the GTE predicate on the "department_id" field.
-func DepartmentIDGTE(v int) predicate.Department {
-	return predicate.Department(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDepartmentID), v))
-	})
-}
-
-// DepartmentIDLT applies the LT predicate on the "department_id" field.
-func DepartmentIDLT(v int) predicate.Department {
-	return predicate.Department(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDepartmentID), v))
-	})
-}
-
-// DepartmentIDLTE applies the LTE predicate on the "department_id" field.
-func DepartmentIDLTE(v int) predicate.Department {
-	return predicate.Department(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDepartmentID), v))
 	})
 }
 

@@ -7,8 +7,6 @@ const (
 	Label = "department"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldDepartmentID holds the string denoting the department_id field in the database.
-	FieldDepartmentID = "department_id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// EdgeEmployees holds the string denoting the employees edge name in mutations.
@@ -27,7 +25,6 @@ const (
 // Columns holds all SQL columns for department fields.
 var Columns = []string{
 	FieldID,
-	FieldDepartmentID,
 	FieldName,
 }
 

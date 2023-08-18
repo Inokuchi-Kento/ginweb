@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
@@ -14,8 +15,6 @@ type Department struct {
 // Fields of the Department.
 func (Department) Fields() []ent.Field {
 	return []ent.Field{
-		field.Int("department_id").
-			Unique(),
 		field.String("name"),
 	}
 }
@@ -23,6 +22,11 @@ func (Department) Fields() []ent.Field {
 // Edges of the Department.
 func (Department) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("employees", Employee.Type),
+		edge.To("employees", Employee.Type).
+			//delete restrict when delete department
+			//update cascade when update department
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Restrict,
+			}),
 	}
 }

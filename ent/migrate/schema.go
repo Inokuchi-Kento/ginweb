@@ -11,7 +11,6 @@ var (
 	// DepartmentsColumns holds the columns for the "departments" table.
 	DepartmentsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "department_id", Type: field.TypeInt, Unique: true},
 		{Name: "name", Type: field.TypeString},
 	}
 	// DepartmentsTable holds the schema information for the "departments" table.
@@ -37,7 +36,7 @@ var (
 				Symbol:     "employees_departments_employees",
 				Columns:    []*schema.Column{EmployeesColumns[3]},
 				RefColumns: []*schema.Column{DepartmentsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.Restrict,
 			},
 		},
 	}
