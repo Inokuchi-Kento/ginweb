@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"ginweb/adapter/repository/mock"
 	"ginweb/domain"
 	"ginweb/domain/testdata"
 	"log"
@@ -11,7 +12,7 @@ import (
 )
 
 func TestUserUseCase_CreateUser(t *testing.T) {
-	mockRepo := new(MockUserRepository)
+	mockRepo := new(mock.MockUserRepository)
 	userUsesase := NewUserUseCase(mockRepo)
 
 	ctx := context.Background()
@@ -37,7 +38,7 @@ func TestUserUseCase_CreateUser(t *testing.T) {
 }
 
 func TestUserUseCase_GetUsers(t *testing.T) {
-	mockRepo := new(MockUserRepository)
+	mockRepo := new(mock.MockUserRepository)
 	userUsesase := NewUserUseCase(mockRepo)
 
 	ctx := context.Background()
