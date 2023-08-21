@@ -42,7 +42,6 @@ func SetUpServer(store *ent.Client) (*Server, error) {
 			users.POST("", userCtrl.CreateUser)
 			users.PUT("/:id", userCtrl.UpdateUser)
 			users.DELETE("/:id", userCtrl.DeleteUser)
-
 		}
 	}
 
