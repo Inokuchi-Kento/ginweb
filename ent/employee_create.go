@@ -9,6 +9,7 @@ import (
 	"ginweb/ent/department"
 	"ginweb/ent/employee"
 
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
@@ -18,6 +19,7 @@ type EmployeeCreate struct {
 	config
 	mutation *EmployeeMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetName sets the "name" field.
@@ -160,6 +162,7 @@ func (ec *EmployeeCreate) createSpec() (*Employee, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
+	_spec.OnConflict = ec.conflict
 	if value, ok := ec.mutation.Name(); ok {
 		_spec.SetField(employee.FieldName, field.TypeString, value)
 		_node.Name = value
@@ -191,10 +194,198 @@ func (ec *EmployeeCreate) createSpec() (*Employee, *sqlgraph.CreateSpec) {
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.Employee.Create().
+//		SetName(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.EmployeeUpsert) {
+//			SetName(v+v).
+//		}).
+//		Exec(ctx)
+func (ec *EmployeeCreate) OnConflict(opts ...sql.ConflictOption) *EmployeeUpsertOne {
+	ec.conflict = opts
+	return &EmployeeUpsertOne{
+		create: ec,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.Employee.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+func (ec *EmployeeCreate) OnConflictColumns(columns ...string) *EmployeeUpsertOne {
+	ec.conflict = append(ec.conflict, sql.ConflictColumns(columns...))
+	return &EmployeeUpsertOne{
+		create: ec,
+	}
+}
+
+type (
+	// EmployeeUpsertOne is the builder for "upsert"-ing
+	//  one Employee node.
+	EmployeeUpsertOne struct {
+		create *EmployeeCreate
+	}
+
+	// EmployeeUpsert is the "OnConflict" setter.
+	EmployeeUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetName sets the "name" field.
+func (u *EmployeeUpsert) SetName(v string) *EmployeeUpsert {
+	u.Set(employee.FieldName, v)
+	return u
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *EmployeeUpsert) UpdateName() *EmployeeUpsert {
+	u.SetExcluded(employee.FieldName)
+	return u
+}
+
+// SetAge sets the "age" field.
+func (u *EmployeeUpsert) SetAge(v int) *EmployeeUpsert {
+	u.Set(employee.FieldAge, v)
+	return u
+}
+
+// UpdateAge sets the "age" field to the value that was provided on create.
+func (u *EmployeeUpsert) UpdateAge() *EmployeeUpsert {
+	u.SetExcluded(employee.FieldAge)
+	return u
+}
+
+// AddAge adds v to the "age" field.
+func (u *EmployeeUpsert) AddAge(v int) *EmployeeUpsert {
+	u.Add(employee.FieldAge, v)
+	return u
+}
+
+// UpdateNewValues updates the mutable fields using the new values that were set on create.
+// Using this option is equivalent to using:
+//
+//	client.Employee.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//		).
+//		Exec(ctx)
+func (u *EmployeeUpsertOne) UpdateNewValues() *EmployeeUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.Employee.Create().
+//	    OnConflict(sql.ResolveWithIgnore()).
+//	    Exec(ctx)
+func (u *EmployeeUpsertOne) Ignore() *EmployeeUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *EmployeeUpsertOne) DoNothing() *EmployeeUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the EmployeeCreate.OnConflict
+// documentation for more info.
+func (u *EmployeeUpsertOne) Update(set func(*EmployeeUpsert)) *EmployeeUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&EmployeeUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetName sets the "name" field.
+func (u *EmployeeUpsertOne) SetName(v string) *EmployeeUpsertOne {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *EmployeeUpsertOne) UpdateName() *EmployeeUpsertOne {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetAge sets the "age" field.
+func (u *EmployeeUpsertOne) SetAge(v int) *EmployeeUpsertOne {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.SetAge(v)
+	})
+}
+
+// AddAge adds v to the "age" field.
+func (u *EmployeeUpsertOne) AddAge(v int) *EmployeeUpsertOne {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.AddAge(v)
+	})
+}
+
+// UpdateAge sets the "age" field to the value that was provided on create.
+func (u *EmployeeUpsertOne) UpdateAge() *EmployeeUpsertOne {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.UpdateAge()
+	})
+}
+
+// Exec executes the query.
+func (u *EmployeeUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for EmployeeCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *EmployeeUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *EmployeeUpsertOne) ID(ctx context.Context) (id int, err error) {
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *EmployeeUpsertOne) IDX(ctx context.Context) int {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // EmployeeCreateBulk is the builder for creating many Employee entities in bulk.
 type EmployeeCreateBulk struct {
 	config
 	builders []*EmployeeCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the Employee entities in the database.
@@ -220,6 +411,7 @@ func (ecb *EmployeeCreateBulk) Save(ctx context.Context) ([]*Employee, error) {
 					_, err = mutators[i+1].Mutate(root, ecb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = ecb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, ecb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -270,6 +462,142 @@ func (ecb *EmployeeCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (ecb *EmployeeCreateBulk) ExecX(ctx context.Context) {
 	if err := ecb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.Employee.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.EmployeeUpsert) {
+//			SetName(v+v).
+//		}).
+//		Exec(ctx)
+func (ecb *EmployeeCreateBulk) OnConflict(opts ...sql.ConflictOption) *EmployeeUpsertBulk {
+	ecb.conflict = opts
+	return &EmployeeUpsertBulk{
+		create: ecb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.Employee.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+func (ecb *EmployeeCreateBulk) OnConflictColumns(columns ...string) *EmployeeUpsertBulk {
+	ecb.conflict = append(ecb.conflict, sql.ConflictColumns(columns...))
+	return &EmployeeUpsertBulk{
+		create: ecb,
+	}
+}
+
+// EmployeeUpsertBulk is the builder for "upsert"-ing
+// a bulk of Employee nodes.
+type EmployeeUpsertBulk struct {
+	create *EmployeeCreateBulk
+}
+
+// UpdateNewValues updates the mutable fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.Employee.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//		).
+//		Exec(ctx)
+func (u *EmployeeUpsertBulk) UpdateNewValues() *EmployeeUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.Employee.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+func (u *EmployeeUpsertBulk) Ignore() *EmployeeUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *EmployeeUpsertBulk) DoNothing() *EmployeeUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the EmployeeCreateBulk.OnConflict
+// documentation for more info.
+func (u *EmployeeUpsertBulk) Update(set func(*EmployeeUpsert)) *EmployeeUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&EmployeeUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetName sets the "name" field.
+func (u *EmployeeUpsertBulk) SetName(v string) *EmployeeUpsertBulk {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *EmployeeUpsertBulk) UpdateName() *EmployeeUpsertBulk {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetAge sets the "age" field.
+func (u *EmployeeUpsertBulk) SetAge(v int) *EmployeeUpsertBulk {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.SetAge(v)
+	})
+}
+
+// AddAge adds v to the "age" field.
+func (u *EmployeeUpsertBulk) AddAge(v int) *EmployeeUpsertBulk {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.AddAge(v)
+	})
+}
+
+// UpdateAge sets the "age" field to the value that was provided on create.
+func (u *EmployeeUpsertBulk) UpdateAge() *EmployeeUpsertBulk {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.UpdateAge()
+	})
+}
+
+// Exec executes the query.
+func (u *EmployeeUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the EmployeeCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for EmployeeCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *EmployeeUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

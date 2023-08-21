@@ -66,15 +66,17 @@ func (ur *userRepository) CreateUser(ctx context.Context, u *domain.User) (user 
 	createUserRow, err := ur.DB.User.Create().
 		SetName(u.Name).
 		SetAge(u.Age).
+		SetGroupID(u.Group_ID).
 		Save(ctx)
 	if err != nil {
 		err = fmt.Errorf("[repository.UserRepository.CreateUser] failed: user = %+v, error = %w ", user, err)
 		return user, err
 	}
 	user = domain.User{
-		ID:   createUserRow.ID,
-		Name: createUserRow.Name,
-		Age:  createUserRow.Age,
+		ID:       createUserRow.ID,
+		Name:     createUserRow.Name,
+		Age:      createUserRow.Age,
+		Group_ID: createUserRow.Edges.Group.ID,
 	}
 	return user, nil
 }

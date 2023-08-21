@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"ginweb/ent/department"
 	"ginweb/ent/employee"
+	"ginweb/ent/group"
 	"ginweb/ent/user"
 
 	"entgo.io/ent"
@@ -35,6 +36,7 @@ func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
 		department.Table: department.ValidColumn,
 		employee.Table:   employee.ValidColumn,
+		group.Table:      group.ValidColumn,
 		user.Table:       user.ValidColumn,
 	}
 	check, ok := checks[table]
