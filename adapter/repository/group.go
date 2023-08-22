@@ -9,6 +9,7 @@ import (
 
 type GroupRepository interface {
 	CreateGroup(ctx context.Context, g *domain.Group) (group domain.Group, err error)
+	UpdateGroupName(ctx context.Context, g *domain.Group, id int) (group domain.Group, err error)
 }
 
 type groupRepository struct {
@@ -32,6 +33,22 @@ func (gr *groupRepository) CreateGroup(ctx context.Context, g *domain.Group) (gr
 	group = domain.Group{
 		ID:   createGroupRow.ID,
 		Name: createGroupRow.Name,
+	}
+	return group, nil
+}
+
+// update
+func (gr *groupRepository) UpdateGroupName(ctx context.Context, g *domain.Group, id int) (group domain.Group, err error) {
+	updateGroupRow, err := gr.DB.Group.UpdateOneID(id).
+		SetName(g.Name).
+		Save(ctx)
+	if err != nil {
+		err = fmt.Errorf("[repository.GroupRepository.UpdateGroup] failed to update group: %w", err)
+		return group, err
+	}
+	group = domain.Group{
+		ID:   updateGroupRow.ID,
+		Name: updateGroupRow.Name,
 	}
 	return group, nil
 }

@@ -32,6 +32,7 @@ func (User) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("group", Group.Type).
 			Ref("users").
+			Required().
 			Unique(),
 	}
 }

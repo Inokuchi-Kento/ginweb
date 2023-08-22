@@ -1,0 +1,1 @@
+select u.*, g.name from users u left join groups g on u.group_users = g.id where g.id=1001;

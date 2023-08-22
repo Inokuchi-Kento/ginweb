@@ -60,14 +60,6 @@ func (uu *UserUpdate) SetGroupID(id int) *UserUpdate {
 	return uu
 }
 
-// SetNillableGroupID sets the "group" edge to the Group entity by ID if the given value is not nil.
-func (uu *UserUpdate) SetNillableGroupID(id *int) *UserUpdate {
-	if id != nil {
-		uu = uu.SetGroupID(*id)
-	}
-	return uu
-}
-
 // SetGroup sets the "group" edge to the Group entity.
 func (uu *UserUpdate) SetGroup(g *Group) *UserUpdate {
 	return uu.SetGroupID(g.ID)
@@ -92,12 +84,18 @@ func (uu *UserUpdate) Save(ctx context.Context) (int, error) {
 	)
 	uu.defaults()
 	if len(uu.hooks) == 0 {
+		if err = uu.check(); err != nil {
+			return 0, err
+		}
 		affected, err = uu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*UserMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = uu.check(); err != nil {
+				return 0, err
 			}
 			uu.mutation = mutation
 			affected, err = uu.sqlSave(ctx)
@@ -145,6 +143,14 @@ func (uu *UserUpdate) defaults() {
 		v := user.UpdateDefaultUpdatedAt()
 		uu.mutation.SetUpdatedAt(v)
 	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (uu *UserUpdate) check() error {
+	if _, ok := uu.mutation.GroupID(); uu.mutation.GroupCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "User.group"`)
+	}
+	return nil
 }
 
 func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
@@ -262,14 +268,6 @@ func (uuo *UserUpdateOne) SetGroupID(id int) *UserUpdateOne {
 	return uuo
 }
 
-// SetNillableGroupID sets the "group" edge to the Group entity by ID if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableGroupID(id *int) *UserUpdateOne {
-	if id != nil {
-		uuo = uuo.SetGroupID(*id)
-	}
-	return uuo
-}
-
 // SetGroup sets the "group" edge to the Group entity.
 func (uuo *UserUpdateOne) SetGroup(g *Group) *UserUpdateOne {
 	return uuo.SetGroupID(g.ID)
@@ -301,12 +299,18 @@ func (uuo *UserUpdateOne) Save(ctx context.Context) (*User, error) {
 	)
 	uuo.defaults()
 	if len(uuo.hooks) == 0 {
+		if err = uuo.check(); err != nil {
+			return nil, err
+		}
 		node, err = uuo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*UserMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = uuo.check(); err != nil {
+				return nil, err
 			}
 			uuo.mutation = mutation
 			node, err = uuo.sqlSave(ctx)
@@ -360,6 +364,14 @@ func (uuo *UserUpdateOne) defaults() {
 		v := user.UpdateDefaultUpdatedAt()
 		uuo.mutation.SetUpdatedAt(v)
 	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (uuo *UserUpdateOne) check() error {
+	if _, ok := uuo.mutation.GroupID(); uuo.mutation.GroupCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "User.group"`)
+	}
+	return nil
 }
 
 func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {

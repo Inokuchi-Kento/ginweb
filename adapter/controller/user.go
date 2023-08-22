@@ -48,10 +48,11 @@ func (controller *userController) CreateUser(ctx *gin.Context) {
 		return
 	}
 
-	log.Println(u)
+	log.Println("u: ", u)
 
 	user, err := controller.UseCase.CreateUser(ctx, u)
 	if checkError(ctx, err) {
+		// エラーレスポンスを返す
 		return
 	}
 	responseCreated(ctx, user)
