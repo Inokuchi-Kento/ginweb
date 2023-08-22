@@ -15,3 +15,8 @@ func (m *MockGroupRepository) CreateGroup(ctx context.Context, g *domain.Group) 
 	args := m.Called(ctx, g)
 	return args.Get(0).(domain.Group), args.Error(1)
 }
+
+func (m *MockGroupRepository) UpdateGroupName(ctx context.Context, g *domain.Group, id int) (domain.Group, error) {
+	args := m.Called(ctx, g, id)
+	return args.Get(0).(domain.Group), args.Error(1)
+}

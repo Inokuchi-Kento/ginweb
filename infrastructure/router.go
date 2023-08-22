@@ -30,6 +30,7 @@ func SetUpServer(store *ent.Client) (*Server, error) {
 	{
 		helCtrl := controller.NewHelloController()
 		userCtrl := controller.NewUserController(store)
+		groupCtrl := controller.NewGroupController(store)
 		hello := v1.Group("/hello")
 		{
 			hello.GET("", helCtrl.HelloController)
@@ -42,6 +43,12 @@ func SetUpServer(store *ent.Client) (*Server, error) {
 			users.POST("", userCtrl.CreateUser)
 			users.PUT("/:id", userCtrl.UpdateUser)
 			users.DELETE("/:id", userCtrl.DeleteUser)
+		}
+
+		groups := v1.Group("/groups")
+		{
+			groups.POST("", groupCtrl.CreateGroup)
+			groups.PUT("/:id", groupCtrl.UpdateGroupName)
 		}
 	}
 

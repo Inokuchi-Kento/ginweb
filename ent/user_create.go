@@ -69,14 +69,6 @@ func (uc *UserCreate) SetGroupID(id int) *UserCreate {
 	return uc
 }
 
-// SetNillableGroupID sets the "group" edge to the Group entity by ID if the given value is not nil.
-func (uc *UserCreate) SetNillableGroupID(id *int) *UserCreate {
-	if id != nil {
-		uc = uc.SetGroupID(*id)
-	}
-	return uc
-}
-
 // SetGroup sets the "group" edge to the Group entity.
 func (uc *UserCreate) SetGroup(g *Group) *UserCreate {
 	return uc.SetGroupID(g.ID)
@@ -182,6 +174,9 @@ func (uc *UserCreate) check() error {
 	}
 	if _, ok := uc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "User.updated_at"`)}
+	}
+	if _, ok := uc.mutation.GroupID(); !ok {
+		return &ValidationError{Name: "group", err: errors.New(`ent: missing required edge "User.group"`)}
 	}
 	return nil
 }

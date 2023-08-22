@@ -58,7 +58,7 @@ var (
 		{Name: "age", Type: field.TypeInt},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "group_users", Type: field.TypeInt, Nullable: true},
+		{Name: "group_users", Type: field.TypeInt},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
@@ -70,7 +70,7 @@ var (
 				Symbol:     "users_groups_users",
 				Columns:    []*schema.Column{UsersColumns[5]},
 				RefColumns: []*schema.Column{GroupsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
