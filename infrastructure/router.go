@@ -49,6 +49,8 @@ func SetUpServer(store *ent.Client) (*Server, error) {
 		{
 			groups.POST("", groupCtrl.CreateGroup)
 			groups.PUT("/:id", groupCtrl.UpdateGroupName)
+			groups.DELETE("/:id")
+			groups.GET("/:id")
 		}
 	}
 

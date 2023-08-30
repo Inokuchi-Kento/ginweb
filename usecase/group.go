@@ -10,6 +10,7 @@ import (
 type GroupUseCase interface {
 	CreateGroup(context.Context, *domain.Group) (domain.Group, error)
 	UpdateGroupName(context.Context, *domain.Group, int) (domain.Group, error)
+	GetGroups(context.Context) ([]domain.Group, error)
 }
 
 type groupUseCase struct {
@@ -34,4 +35,12 @@ func (usecase *groupUseCase) UpdateGroupName(ctx context.Context, g *domain.Grou
 		err = fmt.Errorf("[usecase.UpdateGroupName] failed: %w ", err)
 	}
 	return group, err
+}
+
+func (usecase *groupUseCase) GetGroups(ctx context.Context) ([]domain.Group, error) {
+	groups, err := usecase.GroupRepository.GetGroups(ctx)
+	if err != nil {
+		err = fmt.Errorf("[usecase.GetGroups] failed: %w ", err)
+	}
+	return groups, err
 }

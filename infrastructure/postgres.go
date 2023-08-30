@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"ginweb/ent"
+	"os"
 
 	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"
@@ -11,11 +12,17 @@ import (
 )
 
 func Open() (*ent.Client, error) {
-	user := "postgres"
-	password := "sa"
-	host := "localhost"
-	port := "5555"
-	dbname := "template"
+	// user := "postgres"
+	// password := "sa"
+	// host := "host.docker.internal"
+	// port := "5432"
+	// dbname := "template"
+	host := os.Getenv("DB_HOST")
+	user := os.Getenv("DB_USER")
+	password := os.Getenv("DB_PASSWORD")
+	dbname := os.Getenv("DB_NAME")
+	port := os.Getenv("DB_PORT")
+
 	dsn := fmt.Sprintf("host=%s user=%s password=%s database=%s port=%s sslmode=disable", host, user, password, dbname, port)
 	db, err := sql.Open("pgx", dsn)
 	if err != nil {

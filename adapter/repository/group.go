@@ -10,6 +10,7 @@ import (
 type GroupRepository interface {
 	CreateGroup(ctx context.Context, g *domain.Group) (group domain.Group, err error)
 	UpdateGroupName(ctx context.Context, g *domain.Group, id int) (group domain.Group, err error)
+	GetGroups(ctx context.Context) (groups []domain.Group, err error)
 }
 
 type groupRepository struct {
@@ -51,4 +52,31 @@ func (gr *groupRepository) UpdateGroupName(ctx context.Context, g *domain.Group,
 		Name: updateGroupRow.Name,
 	}
 	return group, nil
+}
+
+// GET
+func (gr *groupRepository) GetGroups(ctx context.Context) (groups []domain.Group, err error) {
+	getGroups, err := gr.DB.Group.Query().All(ctx)
+	if err != nil {
+		err = fmt.Errorf("[repository.GroupRepository.GetGroups] failed to find groups: %w", err)
+		return groups, err
+	}
+	for _, g := range getGroups {
+		group := domain.Group{
+			ID:   g.ID,
+			Name: g.Name,
+		}
+		groups = append(groups, group)
+	}
+	return
+}
+
+// idを指定して、groupを削除するメソッドを記述してください
+func (gr *groupRepository) DeleteGroupByID(ctx context.Context, id int) error {
+	err := gr.DB.Group.DeleteOneID(id).Exec(ctx)
+	if err != nil {
+		err = fmt.Errorf("[repository.GroupRepository.DeleteGroupByID] failed to delete group: %w", err)
+		return err
+	}
+	return nil
 }
