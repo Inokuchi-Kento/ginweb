@@ -1,5 +1,18 @@
 version: '3.8'
 services:
+  ginweb:
+      image: ginweb
+      container_name: ginweb
+      build:
+        context: .
+        dockerfile: ./Dockerfile
+      env_file:
+        - .env
+      ports:
+        - "8080:8080"  # ホストのポートとコンテナのポートをマッピング
+      volumes:
+        - .:/app    # ローカルのソースコードをコンテナにマウント
+      tty: true
   db:
     image: postgres:12.3-alpine
     ports:
@@ -7,4 +20,6 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: sa
-      POSTGRES_DB: template
+      POSTGRES_DB: postgres
+volumes:
+  db_data:
